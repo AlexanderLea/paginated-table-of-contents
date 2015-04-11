@@ -35,59 +35,39 @@ function scanDocument() {
   Logger.log('# Paragraphs: ' + pars.length);
   
   for(var i=0; i<pars.length; i++){
-    var par = pars[i];
+    var paragraph = pars[i];
+    var parentHeading = null; //store heading's parent
     
      // Retrieve the paragraph's attributes.
-     var atts = par.getAttributes();
+     var paragraphHeading = paragraph.getHeading();
        
      //check value of heading attribute, and add to map accordingly
-     if(atts['HEADING'] != DocumentApp.ParagraphHeading.NORMAL){
-       var p; //store heading's parent
-       if(atts['HEADING'] === DocumentApp.ParagraphHeading.HEADING2 
-         || atts['HEADING'] === DocumentApp.ParagraphHeading.HEADING3){
-           parent = i - 1;
+     if(paragraphHeading != DocumentApp.ParagraphHeading.NORMAL){
+     
+       if(paragraphHeading === DocumentApp.ParagraphHeading.HEADING2 
+         || paragraphHeading === DocumentApp.ParagraphHeading.HEADING3){
+           parentHeading = i-2;
          }
          
-         headingsArr.push({id: i, text: par.getText(), level: atts['HEADING'], parent: p, page: 1});
+         headingsArr.push(
+           {
+             id: i, 
+             text: paragraph.getText(), 
+             level: paragraphHeading, 
+             parentHeading: parentHeading, 
+             page: 1, 
+             url: paragraph.getLinkUrl()
+           });
      }
   }
-     /*
-     switch(atts['HEADING']){
-       case DocumentApp.ParagraphHeading.HEADING1:
-         headingsArr.push({id: i, text: par.getText(), level: atts['HEADING'], parent: null, page: 1});
-         break;
-       case DocumentApp.ParagraphHeading.HEADING2:
-         var p = i-1;
-         headingsArr.push({id: i, text: par.getText(), level: atts['HEADING'], parent: p, page: 1});
-         break;
-       case DocumentApp.ParagraphHeading.HEADING3:
-         var p = i-1;
-         headingsArr.push({id: i, text: par.getText(), level: atts['HEADING'], parent: p, page: 1});
-         break;
-       default:
-         break;
-     }     
-  }
-  */
   for (var h in headingsArr) {
-    Logger.log('id: %s, text: %s, heading level: %s, parent: %s, page: %s, ', 
+    Logger.log('id: %s, text: %s, level: %s, parentHeading: %s, page: %s, url: %s ', 
       h, 
       headingsArr[h].text,
       headingsArr[h].level,
-      headingsArr[h].parent,
-      headingsArr[h].page
+      headingsArr[h].parentHeading,
+      headingsArr[h].page,
+      headingsArr[h].url
    );
   }
 }
-  
-  
-  //foreach paragraph
-  //for(var par in pars){
-    //body.appendParagraph('found a child');
-    
-    //for atts = par.getAttributes();
-    
-    //for(var att in atts){
-    //  body.appendParagraph(att + ":" + atts[att]);
-    //}
-  //}
